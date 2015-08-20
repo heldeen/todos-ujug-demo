@@ -6,13 +6,17 @@ import java.util.List;
 import net.eldeen.todos.api.Todo;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;
+import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
+import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapperFactory;
 import org.skife.jdbi.v2.sqlobject.mixins.GetHandle;
+import org.skife.jdbi.v2.tweak.BeanMapperFactory;
 
 /**
  *
  */
+@RegisterMapperFactory(BeanMapperFactory.class)
 public abstract class TodoDAO implements GetHandle, Closeable {
 
   public List<Todo> list(boolean all) {
@@ -23,8 +27,9 @@ public abstract class TodoDAO implements GetHandle, Closeable {
                       .list();
   }
 
-  @SqlUpdate("insert into todos (id, name, done) values (:id, :name, :done)")
-  public abstract int create(@BindBean Todo todo);
+  @SqlUpdate("insert into todos (name, done) values (:name, :done)")
+  @GetGeneratedKeys
+  public abstract long create(@BindBean Todo todo);
 
   @SqlQuery("select * from todos where id = :id")
   public abstract Todo getById(@Bind("id") Long id);

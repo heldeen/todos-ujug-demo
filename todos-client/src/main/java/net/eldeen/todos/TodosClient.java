@@ -2,10 +2,12 @@ package net.eldeen.todos;
 
 import static javax.ws.rs.client.Entity.entity;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 import net.eldeen.todos.api.Todo;
@@ -30,7 +32,8 @@ public class TodosClient {
     }
 
     return webTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                    .get(new GenericType<List<Todo>>(){});
+                    .get(new GenericType<List<Todo>>() {
+                    });
   }
 
   public Todo create(Todo todo) {
@@ -52,9 +55,20 @@ public class TodosClient {
   }
 
   public void deleteById(Long id) {
-    client.target(itemUri(id))
-          .request()
-          .delete();
+    Response response = null;
+    try {
+      response = client.target(itemUri(id))
+            .request()
+            .delete();
+      if (response.getStatus() >= 400) {
+        throw new WebApplicationException(response.getStatus());
+      }
+    }
+    finally {
+      if (response != null) {
+        response.close();
+      }
+    }
   }
 
   private String collectionUri() {

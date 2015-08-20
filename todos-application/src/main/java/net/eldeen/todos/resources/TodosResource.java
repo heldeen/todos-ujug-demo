@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
 
+import com.codahale.metrics.annotation.Timed;
 import net.eldeen.todos.api.Todo;
 import net.eldeen.todos.jdbi.TodoDAO;
 import org.skife.jdbi.v2.DBI;
@@ -36,9 +37,9 @@ public class TodosResource {
     final Todo created;
     try (TodoDAO dao = dbi.open(TodoDAO.class)) {
 
-      dao.create(todo);
+      Long createdId = dao.create(todo);
 
-      created = dao.getById(todo.getId());
+      created = dao.getById(createdId);
     }
     URI relativeLocation = URI.create(created.getId().toString());
 
@@ -48,6 +49,7 @@ public class TodosResource {
   }
 
   @GET
+  @Timed(name = "list")
   public List<Todo> list(@QueryParam("all") boolean all) {
     try (TodoDAO dao = dbi.open(TodoDAO.class)) {
       return dao.list(all);

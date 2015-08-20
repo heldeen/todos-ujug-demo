@@ -51,6 +51,7 @@ public class TodosApplication extends Application<TodosConfig> {
     final DBI dbi = new DBIFactory().build(environment, configuration.getDataSourceFactory(), "postgresql");
     final HealthCheck dbiHealthCheck = new DBIHealthCheck(dbi,
                                                           configuration.getDataSourceFactory().getValidationQuery());
+    //curl http://localhost:8081/healthcheck
     environment.healthChecks().register("db", dbiHealthCheck);
 
     environment.jersey().register(new TodosResource(dbi));

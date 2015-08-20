@@ -9,7 +9,7 @@ dataSourceFactory:
   password: password
 
   # the JDBC URL
-  url: jdbc:postgresql://local.zbdev.net/todos
+  url: jdbc:postgresql://localhost/todos
 
   # any properties specific to your JDBC driver:
   properties:
